@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="../static/style.css">
+    <title>System Dashboard</title>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Carte pour le CPU -->
+        <div class="card">
+            <div class="gauge-container">
+                <svg class="gauge" viewBox="0 0 100 50">
+                    <path class="gauge-bg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                    <path id="cpu-gauge-fg" class="gauge-fg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                </svg>
+                <div id="cpu-percent" class="gauge-percent">0%</div>
+            </div>
+            <div class="card-title">UTILISATION CPU</div>
+            <div id="cpu-uptime" class="card-info">Uptime: 0h 0m 0s</div>
+        </div>
+
+        <!-- Carte pour la RAM -->
+        <div class="card">
+            <div class="gauge-container">
+                <svg class="gauge" viewBox="0 0 100 50">
+                    <path class="gauge-bg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                    <path id="ram-gauge-fg" class="gauge-fg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                </svg>
+                <div id="ram-percent" class="gauge-percent">0%</div>
+            </div>
+            <div class="card-title">UTILISATION RAM</div>
+            <div id="ram-info" class="card-info">0.00 Go / 0.00 Go</div>
+        </div>
+
+        <!-- Section pour les disques qui sera remplie par le JavaScript -->
+        <div id="disks-container" class="full-width-card">
+            <div class="card-title">STOCKAGE SYSTÈME</div>
+            <!-- Les disques seront ajoutés ici -->
+        </div>
+
+    </div>
+
+    <!-- Le JavaScript mis à jour -->
+    <script>
+        // Fonction pour mettre à jour les jauges semi-circulaires
+        function setGaugeValue(gaugeElement, percentage) {
+            // La circonférence d'un cercle complet est 2 * PI * R
+            // Pour notre demi-cercle avec un rayon de 40, c'est environ 125.6
+            const totalLength = 125.6;
+            const offset = totalLength - (percentage / 100) * totalLength;
+            gaugeElement.style.strokeDashoffset = offset;
+        }
+
+        async function updateStats() {
+            try {
+                const response = await fetch("/api/stats");
+                const data = await response.json();
+
+                // === CPU ===
+                const cpuGauge = document.getElementById("cpu-gauge-fg");
+                setGaugeValue(cpuGauge, data.cpu_usage);
+                document.getElementById("cpu-percent").textContent = `${data.cpu_usage.toFixed(1)}%`;
+                const uptime = data.cpu_uptime;
+                document.getElementById("cpu-uptime").textContent = `Uptime: ${uptime[0]}h ${uptime[1]}m ${uptime[2]}s`;
+
+                // === RAM ===
+                const ramGauge = document.getElementById("ram-gauge-fg");
+                const ramPercent = (data.ram_used / data.ram_total) * 100;
+                setGaugeValue(ramGauge, ramPercent);
+                document.getElementById("ram-percent").textContent = `${ramPercent.toFixed(1)}%`;
+                document.getElementById("ram-info").textContent = `${data.ram_used.toFixed(2)} Go / ${data.ram_total.toFixed(2)} Go`;
+
+                // === Disques ===
+                const disksDiv = document.getElementById("disks-container");
+                // On garde le titre, on vide juste le reste
+                while (disksDiv.children.length > 1) {
+                    disksDiv.removeChild(disksDiv.lastChild);
+                }
+
+                data.disks.forEach(d => {
+                    const freeGB = (d.free / (1024**3)).toFixed(2);
+                    const totalGB = (d.total / (1024**3)).toFixed(2);
+                    
+                    // On crée la structure HTML pour chaque disque
+                    const diskElement = document.createElement("div");
+                    diskElement.className = "disk-entry";
+                    diskElement.innerHTML = `
+                        <div class="disk-info">
+                            <span class="disk-name">Disque (${d.mountpoint})</span>
+                            <span class="disk-space">${freeGB} Gio libre(s) sur ${totalGB} Tio</span>
+                        </div>
+                        <div class="disk-progress-bar">
+                            <div class="disk-progress-fill" style="width: ${d.percent}%;"></div>
+                        </div>
+                    `;
+                    disksDiv.appendChild(diskElement);
+                });
+            } catch (error) {
+                console.error("Erreur lors de la mise à jour des stats:", error);
+            }
+        }
+
+        // On lance la mise à jour
+        setInterval(updateStats, 2000);
+        document.addEventListener('DOMContentLoaded', updateStats);
+    </script>
+</body>
+</html>

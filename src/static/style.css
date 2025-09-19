@@ -1,0 +1,175 @@
+/* style.css */
+
+/* --- Initialisation et Thème Général --- */
+body {
+    background-color: #0a0a1a; /* Un bleu très sombre, presque noir */
+    color: #e0e0ff; /* Un blanc légèrement bleuté */
+    font-family: 'Exo 2', sans-serif; /* Notre police futuriste */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne */
+    gap: 20px; /* Espace entre les cartes */
+    max-width: 1200px;
+    width: 100%;
+}
+
+/* --- Style des Cartes --- */
+.card, .full-width-card {
+    background-color: rgba(20, 20, 40, 0.6); /* Fond semi-transparent */
+    border: 1px solid rgba(0, 191, 255, 0.3); /* Bordure bleu "électrique" */
+    border-radius: 8px;
+    padding: 20px;
+    backdrop-filter: blur(5px); /* Effet de verre dépoli */
+    box-sizing: border-box;
+}
+
+.card {
+    flex-grow: 1;
+    min-width: 280px; /* Largeur minimale avant de passer à la ligne */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.full-width-card {
+    width: 100%;
+}
+
+.card-title {
+    font-size: 1em;
+    font-weight: 700;
+    color: #00bfff; /* Deep Sky Blue */
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.card-info {
+    font-size: 0.9em;
+    color: #a0a0ff;
+    margin-top: 10px;
+}
+
+/* --- Style des Jauges Semi-circulaires (CPU & RAM) --- */
+.gauge-container {
+    position: relative;
+    width: 200px;
+    height: 100px; /* La moitié de la largeur */
+    margin-bottom: 15px;
+}
+
+.gauge {
+    width: 100%;
+    height: 100%;
+}
+
+.gauge-bg, .gauge-fg {
+    fill: none;
+    stroke-width: 10;
+    stroke-linecap: round;
+}
+
+.gauge-bg {
+    stroke: rgba(255, 255, 255, 0.1); /* Fond de la jauge */
+}
+
+.gauge-fg {
+    stroke: #00bfff; /* Couleur de remplissage de la jauge */
+    stroke-dasharray: 125.6; /* Longueur du tracé (calculée pour le demi-cercle) */
+    stroke-dashoffset: 125.6; /* Au début, la jauge est "vide" */
+    transition: stroke-dashoffset 0.5s ease-in-out; /* Animation fluide */
+    transform-origin: center;
+}
+
+.gauge-percent {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.2em;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* --- Style des Barres de Progression (Disques) --- */
+.disk-entry {
+    margin-bottom: 15px;
+}
+.disk-entry:last-child {
+    margin-bottom: 0;
+}
+
+.disk-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9em;
+}
+
+.disk-name {
+    font-weight: bold;
+}
+
+.disk-space {
+    color: #a0a0ff;
+}
+
+.disk-progress-bar {
+    width: 100%;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.disk-progress-fill {
+    height: 100%;
+    background-color: #00bfff;
+    border-radius: 6px;
+    transition: width 0.5s ease-in-out; /* Animation fluide */
+}
+
+/* Pour le texte normal (weight 400) */
+@font-face {
+  font-family: 'Exo 2 Local';
+  src: url('fonts/Exo2-Regular.ttf') format('truetype');
+  font-weight: 400; 
+}
+
+/* Pour le texte en gras (weight 700) */
+@font-face {
+  font-family: 'Exo 2 Local';
+  src: url('fonts/Exo2-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
+/* Pour le texte fin (weight 300) */
+@font-face {
+  font-family: 'Exo 2 Local';
+  src: url('fonts/Exo2-Light.ttf') format('truetype');
+  font-weight: 300;
+}
+
+
+/* --- Étape 2: On utilise notre police locale dans le body --- */
+body {
+    background-color: #0a0a1a;
+    color: #e0e0ff;
+    /* On appelle le nom qu'on a défini juste au-dessus */
+    font-family: 'Exo 2 Local', sans-serif; 
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
