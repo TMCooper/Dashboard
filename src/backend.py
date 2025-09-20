@@ -66,3 +66,6 @@ class Cardinal:
         s = total_time % 60
         return h, m, s
 
+    def freq_cpu():
+        freq_cpu_max = psutil.cpu_freq()
+        return round(freq_cpu_max.max / 1000, 2)

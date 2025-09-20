@@ -2,110 +2,416 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/style.css">
     <title>System Dashboard</title>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Carte pour le CPU -->
-        <div class="card">
-            <div class="gauge-container">
-                <svg class="gauge" viewBox="0 0 100 50">
-                    <path class="gauge-bg" d="M10 50 A 40 40 0 0 1 90 50"></path>
-                    <path id="cpu-gauge-fg" class="gauge-fg" d="M10 50 A 40 40 0 0 1 90 50"></path>
-                </svg>
-                <div id="cpu-percent" class="gauge-percent">0%</div>
-            </div>
-            <div class="card-title">UTILISATION CPU</div>
-            <div id="cpu-uptime" class="card-info">Uptime: 0h 0m 0s</div>
-        </div>
+    <audio id="hover-audio" src="../static/audio/hover_sound.mp3" preload="auto"></audio>
 
-        <!-- Carte pour la RAM -->
-        <div class="card">
-            <div class="gauge-container">
-                <svg class="gauge" viewBox="0 0 100 50">
-                    <path class="gauge-bg" d="M10 50 A 40 40 0 0 1 90 50"></path>
-                    <path id="ram-gauge-fg" class="gauge-fg" d="M10 50 A 40 40 0 0 1 90 50"></path>
-                </svg>
-                <div id="ram-percent" class="gauge-percent">0%</div>
-            </div>
-            <div class="card-title">UTILISATION RAM</div>
-            <div id="ram-info" class="card-info">0.00 Go / 0.00 Go</div>
-        </div>
+    <div class="dashboard-container">
+        
+        <nav class="main-nav">
+            <ul>
+                <li id="nav-dashboard" class="nav-item active interactive-item"><span class="nav-icon"></span>Dashboard</li>
+                <li id="nav-scripts" class="nav-item interactive-item"><span class="nav-icon"></span>Scripts</li>
+                <li class="nav-item interactive-item"><span class="nav-icon"></span>Mode Performance</li>
+                <li id="nav-update" class="nav-item interactive-item"><span class="nav-icon"></span>Update rapide</li>
+                <li class="nav-item exit interactive-item"><span class="nav-icon"></span>Quitter</li>
+            </ul>
+        </nav>
 
-        <!-- Section pour les disques qui sera remplie par le JavaScript -->
-        <div id="disks-container" class="full-width-card">
-            <div class="card-title">STOCKAGE SYSTÈME</div>
-            <!-- Les disques seront ajoutés ici -->
-        </div>
+        <main class="content-panel">
+            
+            <!-- VUE N°1 : DASHBOARD -->
+            <div id="dashboard-view" class="view-container">
+                <div class="settings-group">
+                    <h2 class="settings-group-title">Performance en temps réel</h2>
+                    
+                    <div class="performance-widget interactive-item">
+                        <div class="gauge-container">
+                            <svg class="gauge" viewBox="0 0 100 50">
+                                <path class="gauge-bg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                                <path id="cpu-gauge-fg" class="gauge-fg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                            </svg>
+                        </div>
+                        <div class="stats-details">
+                            <div class="stats-primary">
+                                <span class="label">CPU</span>
+                                <span id="cpu-percent" class="value">0%</span>
+                            </div>
+                            <div class="stats-secondary">
+                                <span id="cpu-freq">0.00 GHz</span>
+                                <span id="cpu-uptime">Uptime: 0j 0h 0m</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="performance-widget interactive-item">
+                        <div class="gauge-container">
+                            <svg class="gauge" viewBox="0 0 100 50">
+                                <path class="gauge-bg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                                <path id="ram-gauge-fg" class="gauge-fg" d="M10 50 A 40 40 0 0 1 90 50"></path>
+                            </svg>
+                        </div>
+                        <div class="stats-details">
+                            <div class="stats-primary">
+                                <span class="label">RAM</span>
+                                <span id="ram-percent" class="value">0%</span>
+                            </div>
+                            <div class="stats-secondary">
+                               <span id="ram-info">0.00 Go / 0.00 Go</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                     <h2 class="settings-group-title">Stockage</h2>
+                     <div id="disks-container"></div>
+                </div>
+
+                <div id="file-explorer" class="explorer-container">
+                    <div id="explorer-header" class="explorer-path">C:\</div>
+                    <div id="explorer-content" class="explorer-list"></div>
+                </div>
+            </div>
+
+            <!-- VUE N°2 : SCRIPTS -->
+            <div id="scripts-view" class="view-container hidden">
+                <div class="settings-group">
+                    <h2 class="settings-group-title">Gestionnaire de Scripts</h2>
+                    <div class="script-toolbar">
+                        <input type="search" id="script-search-bar" placeholder="Rechercher un script..." class="interactive-item">
+                    </div>
+                    <div id="script-list" class="script-list-container">
+                        <!-- Le contenu sera généré dynamiquement par JavaScript -->
+                        <p class="script-placeholder">Chargement des scripts...</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+        
+        <aside class="description-panel">
+            <h3 id="desc-title">Dashboard</h3>
+            <p id="desc-text">
+                Interface de contrôle et de surveillance du système.
+                Survolez et cliquez sur les éléments pour interagir.
+            </p>
+        </aside>
 
     </div>
 
-    <!-- Le JavaScript mis à jour -->
+    <!-- Fenêtre Modale pour voir le code -->
+    <div id="code-viewer-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="modal-title">Code Source</h3>
+            <pre><code id="modal-code-content"></code></pre>
+            <button id="modal-close-btn" class="interactive-item">Fermer</button>
+        </div>
+    </div>
+
+
     <script>
-        // Fonction pour mettre à jour les jauges semi-circulaires
+        const descriptions = {
+            "dashboard": {
+                title: "Dashboard",
+                text: "Interface de contrôle et de surveillance du système. Survolez et cliquez sur les éléments pour interagir."
+            },
+            "scripts": {
+                title: "Gestionnaire de Scripts",
+                text: "Lancez, arrêtez et consultez le code de vos scripts d'automatisation. Les scripts sont chargés depuis le dossier 'src/scripts' de l'application."
+            }
+        };
+
+        // --- Fonctions Utilitaires ---
         function setGaugeValue(gaugeElement, percentage) {
-            // La circonférence d'un cercle complet est 2 * PI * R
-            // Pour notre demi-cercle avec un rayon de 40, c'est environ 125.6
             const totalLength = 125.6;
             const offset = totalLength - (percentage / 100) * totalLength;
             gaugeElement.style.strokeDashoffset = offset;
         }
 
+        function playHoverSound() {
+            const audio = document.getElementById('hover-audio');
+            audio.currentTime = 0;
+            audio.play().catch(e => console.error("Erreur de lecture audio:", e));
+        }
+
+        function updateHoverListeners() {
+            document.querySelectorAll('.interactive-item').forEach(item => {
+                item.removeEventListener('mouseenter', playHoverSound);
+                item.addEventListener('mouseenter', playHoverSound);
+            });
+        }
+        
+        // --- Logique de changement de vue ---
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(view => {
+                if (view.id !== viewId) {
+                    view.classList.add('hidden');
+                }
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+
+            document.querySelectorAll('.main-nav .nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            const viewName = viewId.split('-')[0]; // "dashboard" or "scripts"
+            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            const desc = descriptions[viewName];
+            if (desc) {
+                document.getElementById('desc-title').textContent = desc.title;
+                document.getElementById('desc-text').textContent = desc.text;
+            }
+        }
+
+        // --- Fonctions de la vue Dashboard ---
         async function updateStats() {
             try {
                 const response = await fetch("/api/stats");
                 const data = await response.json();
-
-                // === CPU ===
-                const cpuGauge = document.getElementById("cpu-gauge-fg");
-                setGaugeValue(cpuGauge, data.cpu_usage);
+                setGaugeValue(document.getElementById("cpu-gauge-fg"), data.cpu_usage);
                 document.getElementById("cpu-percent").textContent = `${data.cpu_usage.toFixed(1)}%`;
+                document.getElementById("cpu-freq").textContent = `${data.cpu_freq} GHz`;
                 const uptime = data.cpu_uptime;
                 document.getElementById("cpu-uptime").textContent = `Uptime: ${uptime[0]}h ${uptime[1]}m ${uptime[2]}s`;
-
-                // === RAM ===
-                const ramGauge = document.getElementById("ram-gauge-fg");
                 const ramPercent = (data.ram_used / data.ram_total) * 100;
-                setGaugeValue(ramGauge, ramPercent);
+                setGaugeValue(document.getElementById("ram-gauge-fg"), ramPercent);
                 document.getElementById("ram-percent").textContent = `${ramPercent.toFixed(1)}%`;
                 document.getElementById("ram-info").textContent = `${data.ram_used.toFixed(2)} Go / ${data.ram_total.toFixed(2)} Go`;
-
-                // === Disques ===
                 const disksDiv = document.getElementById("disks-container");
-                // On garde le titre, on vide juste le reste
-                while (disksDiv.children.length > 1) {
-                    disksDiv.removeChild(disksDiv.lastChild);
-                }
-
+                disksDiv.innerHTML = "";
                 data.disks.forEach(d => {
-                    const freeGB = (d.free / (1024**3)).toFixed(2);
-                    const totalGB = (d.total / (1024**3)).toFixed(2);
-                    
-                    // On crée la structure HTML pour chaque disque
                     const diskElement = document.createElement("div");
-                    diskElement.className = "disk-entry";
+                    diskElement.className = "setting-item interactive-item";
                     diskElement.innerHTML = `
-                        <div class="disk-info">
-                            <span class="disk-name">Disque (${d.mountpoint})</span>
-                            <span class="disk-space">${freeGB} Gio libre(s) sur ${totalGB} Tio</span>
-                        </div>
-                        <div class="disk-progress-bar">
-                            <div class="disk-progress-fill" style="width: ${d.percent}%;"></div>
-                        </div>
-                    `;
+                        <label>Disque (${d.mountpoint})</label>
+                        <div class="value">
+                            <div class="disk-progress-bar"><div class="disk-progress-fill" style="width: ${d.percent}%;"></div></div>
+                            <span>${d.percent}%</span>
+                        </div>`;
+                    diskElement.onclick = () => browsePath(`${d.mountpoint}`);
                     disksDiv.appendChild(diskElement);
                 });
+                updateHoverListeners();
             } catch (error) {
                 console.error("Erreur lors de la mise à jour des stats:", error);
             }
         }
 
-        // On lance la mise à jour
-        setInterval(updateStats, 2000);
-        document.addEventListener('DOMContentLoaded', updateStats);
+        // --- DÉBUT DE LA CORRECTION : EXPLORATEUR DE FICHIERS ---
+
+        async function browsePath(path) {
+            try {
+                const response = await fetch(`/api/browse?path=${encodeURIComponent(path)}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error(`Erreur lors de l'exploration de ${path}:`, errorData.error);
+                    document.getElementById('explorer-content').innerHTML = `<div class="explorer-item">Erreur: ${errorData.error}</div>`;
+                    return;
+                }
+                const data = await response.json();
+                
+                document.getElementById('explorer-header').textContent = data.current_path;
+                const contentDiv = document.getElementById('explorer-content');
+                contentDiv.innerHTML = ''; // Vider le contenu précédent
+
+                // Ajouter l'élément ".." pour remonter si on n'est pas à la racine
+                const pathParts = data.current_path.replace(/\\$/, '').split('\\');
+                if (pathParts.length > 1) {
+                    const parentPath = pathParts.slice(0, -1).join('\\') + '\\';
+                    const parentEl = document.createElement('div');
+                    parentEl.className = 'explorer-item interactive-item';
+                    parentEl.innerHTML = `<span class="icon folder"></span> ..`;
+                    parentEl.onclick = () => browsePath(parentPath);
+                    contentDiv.appendChild(parentEl);
+                }
+
+                // Trier pour avoir les dossiers en premier
+                data.items.sort((a, b) => {
+                    if (a.type === b.type) return a.name.localeCompare(b.name);
+                    return a.type === 'folder' ? -1 : 1;
+                });
+
+                data.items.forEach(item => {
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'explorer-item interactive-item';
+                    itemEl.innerHTML = `<span class="icon ${item.type}"></span> ${item.name}`;
+                    
+                    if (item.type === 'folder') {
+                        itemEl.onclick = () => browsePath(item.path);
+                    } else {
+                        itemEl.onclick = () => openFile(item.path);
+                    }
+                    contentDiv.appendChild(itemEl);
+                });
+
+                updateHoverListeners();
+
+            } catch (error) {
+                console.error("Erreur de l'explorateur de fichiers:", error);
+                document.getElementById('explorer-content').innerHTML = `<div class="explorer-item">Erreur de connexion.</div>`;
+            }
+        }
+
+        async function openFile(path) {
+            console.log(`Tentative d'ouverture de : ${path}`);
+            try {
+                await fetch(`/api/open?path=${encodeURIComponent(path)}`);
+            } catch (error) {
+                console.error(`Erreur lors de l'ouverture du fichier ${path}:`, error);
+            }
+        }
+        
+        // --- Fonctions pour la vue Scripts ---
+        async function loadScripts() {
+            try {
+                const response = await fetch('/api/scripts');
+                const scripts = await response.json();
+                const container = document.getElementById('script-list');
+                container.innerHTML = '';
+
+                if (scripts.length === 0) {
+                    container.innerHTML = `<p class="script-placeholder">Aucun script trouvé dans le dossier src/scripts.</p>`;
+                    return;
+                }
+
+                scripts.forEach(script => {
+                    const type = script.name.endsWith('.py') ? 'python' : 'batch';
+                    const icon = type === 'python' ? '🐍' : '🦇';
+
+                    const scriptEl = document.createElement('div');
+                    scriptEl.className = 'script-item interactive-item';
+                    scriptEl.dataset.scriptName = script.name;
+                    scriptEl.innerHTML = `
+                        <div class="script-info">
+                            <span class="script-icon">${icon}</span>
+                            <span class="script-name">${script.name}</span>
+                        </div>
+                        <div class="script-actions">
+                            <button class="script-btn launch interactive-item">Lancer</button>
+                            <button class="script-btn stop interactive-item">Arrêter</button>
+                            <button class="script-btn view interactive-item">Voir le code</button>
+                        </div>
+                    `;
+                    
+                    scriptEl.querySelector('.launch').onclick = (e) => { e.stopPropagation(); launchScript(script.name); };
+                    scriptEl.querySelector('.stop').onclick = (e) => { e.stopPropagation(); stopScript(script.name); };
+                    scriptEl.querySelector('.view').onclick = (e) => { e.stopPropagation(); viewScript(script.name); };
+                    
+                    container.appendChild(scriptEl);
+                });
+                updateHoverListeners();
+
+            } catch (error) {
+                console.error("Erreur lors du chargement des scripts:", error);
+                document.getElementById('script-list').innerHTML = `<p class="script-placeholder">Erreur de chargement des scripts.</p>`;
+            }
+        }
+
+        function launchScript(scriptName) {
+            console.log(`Lancement de ${scriptName}`);
+            fetch(`/api/scripts/launch?name=${encodeURIComponent(scriptName)}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => { console.log(data.message); });
+        }
+
+        function stopScript(scriptName) {
+            console.log(`Arrêt de ${scriptName}`);
+            fetch(`/api/scripts/stop?name=${encodeURIComponent(scriptName)}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => { console.log(data.message); });
+        }
+
+        async function viewScript(scriptName) {
+            console.log(`Visualisation de ${scriptName}`);
+            try {
+                const response = await fetch(`/api/scripts/view?name=${encodeURIComponent(scriptName)}`);
+                const data = await response.json();
+
+                document.getElementById('modal-title').textContent = `Code Source : ${scriptName}`;
+                document.getElementById('modal-code-content').textContent = data.content;
+                document.getElementById('code-viewer-modal').classList.remove('hidden');
+            } catch(error) {
+                console.error("Erreur pour voir le script:", error);
+            }
+        }
+
+        function filterScripts() {
+            const searchTerm = document.getElementById('script-search-bar').value.toLowerCase();
+            document.querySelectorAll('.script-item').forEach(item => {
+                const name = item.dataset.scriptName.toLowerCase();
+                if (name.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+         // --- NOUVELLE FONCTION POUR LA MISE A JOUR RAPIDE ---
+        async function runUpdateScript() {
+            console.log("Lancement de la mise à jour rapide...");
+            // On prévient l'utilisateur avant de lancer
+            const confirmation = confirm("Vous etes sur le point de lancer la mise a jour du dashboard \n\nUne nouvelle fenetre va s'ouvrir. Apres la mise a jour, vous devrez peut-etre redemarrer l'application manuellement.\n\nVoulez-vous continuer ?");
+
+            if (confirmation) {
+                try {
+                    const response = await fetch('/api/run-update', { method: 'POST' });
+                    const data = await response.json();
+                    if (response.ok) {
+                        alert("Le script de mise a jour a ete lance dans une nouvelle fenetre.");
+                    } else {
+                        alert(`Erreur: ${data.error}`);
+                    }
+                } catch (error) {
+                    console.error("Erreur lors du lancement de la mise a jour:", error);
+                    alert("Impossible de contacter le serveur pour lancer la mise a jour.");
+                }
+            } else {
+                console.log("Mise à jour annulée par l'utilisateur.");
+            }
+        }
+
+        // --- Initialisation ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialisation des stats et de l'explorateur du dashboard
+            updateStats();
+            browsePath('C:\\'); // Appel initial pour remplir l'explorateur
+            setInterval(updateStats, 2000);
+
+            // Initialisation de la vue Scripts
+            loadScripts();
+
+            // Setup des listeners pour la navigation principale
+            document.getElementById('nav-dashboard').onclick = () => showView('dashboard-view');
+            document.getElementById('nav-scripts').onclick = () => showView('scripts-view');
+             document.getElementById('nav-update').onclick = runUpdateScript;
+            
+            // Setup des listeners pour la modale et la recherche
+            document.getElementById('modal-close-btn').onclick = () => {
+                document.getElementById('code-viewer-modal').classList.add('hidden');
+            };
+            document.getElementById('script-search-bar').onkeyup = filterScripts;
+            
+            // Cache toutes les vues sauf la première au chargement
+            document.querySelectorAll('.view-container').forEach(v => v.classList.add('hidden'));
+
+            // Applique l'animation d'apparition initiale
+            setTimeout(() => {
+                showView('dashboard-view');
+            }, 100);
+
+            // Setup des listeners pour la modale et la recherche
+            document.getElementById('modal-close-btn').onclick = () => {
+                document.getElementById('code-viewer-modal').classList.add('hidden');
+            };
+
+            updateHoverListeners();
+        });
     </script>
 </body>
 </html>

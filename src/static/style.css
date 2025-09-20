@@ -1,175 +1,207 @@
-/* style.css */
+/* Fichier: style.css (Version Complète et Mise à Jour) */
 
-/* --- Initialisation et Thème Général --- */
+/* --- Polices locales et Thème --- */
+@font-face {
+  font-family: 'Exo 2 Local'; src: url('fonts/Exo2-Regular.ttf') format('truetype'); font-weight: 400;
+}
+@font-face {
+  font-family: 'Exo 2 Local'; src: url('fonts/Exo2-Bold.ttf') format('truetype'); font-weight: 700;
+}
+:root {
+    --bg-color: #0c0c12;
+    --text-color: #e0e0e0;
+    --text-inactive: #6a6a7a;
+    --highlight-color: #f0e6d2;
+    --border-color: rgba(90, 90, 110, 0.4);
+    --success-color: #4CAF50;
+    --error-color: #F44336;
+}
 body {
-    background-color: #0a0a1a; /* Un bleu très sombre, presque noir */
-    color: #e0e0ff; /* Un blanc légèrement bleuté */
-    font-family: 'Exo 2', sans-serif; /* Notre police futuriste */
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    background-color: var(--bg-color);
+    background-image: 
+        radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(45deg, rgba(255,255,255,0.01) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.01) 75%),
+        linear-gradient(45deg, rgba(255,255,255,0.01) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.01) 75%);
+    background-size: 3px 3px, 100px 100px, 100px 100px;
+    background-position: 0 0, 50px 50px, 0px 0px;
+    color: var(--text-color);
+    font-family: 'Exo 2 Local', sans-serif;
+    font-size: 16px; margin: 0; overflow: hidden;
 }
 
-.container {
-    display: flex;
-    flex-wrap: wrap; /* Permet aux éléments de passer à la ligne */
-    gap: 20px; /* Espace entre les cartes */
-    max-width: 1200px;
+/* --- Structure principale --- */
+.dashboard-container { display: grid; grid-template-columns: 280px 1fr 350px; height: 100vh; padding: 2rem; box-sizing: border-box; }
+.main-nav { padding-right: 3rem; }
+.content-panel { padding: 0 3rem; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); overflow-y: auto; position: relative; } /* Ajout de position: relative */
+.description-panel { padding-left: 3rem; }
+
+/* --- Navigation --- */
+.main-nav ul { list-style: none; padding: 0; margin-top: 5rem; }
+.nav-item { color: var(--text-inactive); padding: 0.8rem 1.5rem; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; }
+.nav-item.active { color: var(--highlight-color); font-weight: 700; }
+.nav-item.exit { margin-top: 2rem; }
+.nav-icon { display: inline-block; width: 12px; height: 12px; border: 1px solid var(--text-inactive); margin-right: 1.5rem; position: relative; }
+.nav-icon::before, .nav-icon::after { content: ''; position: absolute; background: var(--text-inactive); left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.nav-icon::before { width: 100%; height: 1px; }
+.nav-icon::after { height: 100%; width: 1px; }
+.nav-item.active .nav-icon { border-color: var(--highlight-color); }
+.nav-item.active .nav-icon::before, .nav-item.active .nav-icon::after { background: var(--highlight-color); }
+
+/* --- NOUVEAU : Gestionnaire de Vues et Transitions --- */
+.view-container {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+.view-container.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none; /* Empêche les clics sur la vue cachée */
+    position: absolute; /* Permet aux vues de se superposer durant la transition */
+    top: 0; left: 0; right: 0; /* Assure que la vue cachée ne perturbe pas le layout */
+    padding: 0 3rem; /* Conserve le padding du content-panel */
+}
+
+
+/* --- Contenu Principal --- */
+.settings-group { padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); }
+.settings-group:last-child { border-bottom: none; }
+.settings-group-title { font-size: 1rem; font-weight: 400; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 1.5rem 0; }
+.settings-group-title::before { content: ':: '; }
+
+/* --- Widgets de Performance --- */
+.performance-widget { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 0; cursor: pointer; }
+.performance-widget:not(:last-child) { border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+.stats-details { flex: 1; display: flex; flex-direction: column; }
+.stats-primary { display: flex; justify-content: space-between; align-items: baseline; }
+.stats-primary .label { font-size: 1.5rem; font-weight: 700; }
+.stats-primary .value { font-size: 2.5rem; font-weight: 700; color: var(--highlight-color); }
+.stats-secondary { display: flex; justify-content: space-between; color: var(--text-inactive); margin-top: 0.5rem; }
+
+/* --- Jauges --- */
+.gauge-container { width: 150px; height: 75px; }
+.gauge { width: 100%; height: 100%; }
+.gauge-bg, .gauge-fg { fill: none; stroke-width: 8; stroke-linecap: round; }
+.gauge-bg { stroke: rgba(255, 255, 255, 0.1); }
+.gauge-fg { stroke: var(--highlight-color); stroke-dasharray: 125.6; stroke-dashoffset: 125.6; transition: stroke-dashoffset 0.5s ease-out; }
+
+/* --- Section Stockage --- */
+.setting-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; cursor: pointer; }
+.setting-item label { font-size: 1.1rem; }
+.setting-item .value { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 1rem; }
+.disk-progress-bar { width: 150px; height: 4px; background-color: rgba(255, 255, 255, 0.2); }
+.disk-progress-fill { height: 100%; background-color: var(--highlight-color); }
+
+/* --- Explorateur de Fichiers --- */
+.explorer-container { margin-top: 1.5rem; background-color: rgba(0,0,0,0.2); border-top: 1px solid var(--border-color); max-height: 35vh; display: flex; flex-direction: column; }
+.explorer-path { padding: 0.8rem 1rem; font-family: monospace; color: var(--text-inactive); background-color: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-color); }
+.explorer-list { padding: 0.5rem; overflow-y: auto; }
+.explorer-item { padding: 0.5rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; border-radius: 3px; }
+.explorer-item .icon.folder::before { content: '📁'; }
+.explorer-item .icon.file::before { content: '📄'; }
+
+/* --- NOUVEAU : Vue des Scripts --- */
+.script-toolbar { margin-bottom: 1.5rem; }
+#script-search-bar {
     width: 100%;
-}
-
-/* --- Style des Cartes --- */
-.card, .full-width-card {
-    background-color: rgba(20, 20, 40, 0.6); /* Fond semi-transparent */
-    border: 1px solid rgba(0, 191, 255, 0.3); /* Bordure bleu "électrique" */
-    border-radius: 8px;
-    padding: 20px;
-    backdrop-filter: blur(5px); /* Effet de verre dépoli */
+    background-color: rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    padding: 0.8rem 1rem;
+    font-family: 'Exo 2 Local', sans-serif;
+    font-size: 1rem;
     box-sizing: border-box;
 }
-
-.card {
-    flex-grow: 1;
-    min-width: 280px; /* Largeur minimale avant de passer à la ligne */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.full-width-card {
-    width: 100%;
-}
-
-.card-title {
-    font-size: 1em;
-    font-weight: 700;
-    color: #00bfff; /* Deep Sky Blue */
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.card-info {
-    font-size: 0.9em;
-    color: #a0a0ff;
-    margin-top: 10px;
-}
-
-/* --- Style des Jauges Semi-circulaires (CPU & RAM) --- */
-.gauge-container {
-    position: relative;
-    width: 200px;
-    height: 100px; /* La moitié de la largeur */
-    margin-bottom: 15px;
-}
-
-.gauge {
-    width: 100%;
-    height: 100%;
-}
-
-.gauge-bg, .gauge-fg {
-    fill: none;
-    stroke-width: 10;
-    stroke-linecap: round;
-}
-
-.gauge-bg {
-    stroke: rgba(255, 255, 255, 0.1); /* Fond de la jauge */
-}
-
-.gauge-fg {
-    stroke: #00bfff; /* Couleur de remplissage de la jauge */
-    stroke-dasharray: 125.6; /* Longueur du tracé (calculée pour le demi-cercle) */
-    stroke-dashoffset: 125.6; /* Au début, la jauge est "vide" */
-    transition: stroke-dashoffset 0.5s ease-in-out; /* Animation fluide */
-    transform-origin: center;
-}
-
-.gauge-percent {
-    position: absolute;
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.2em;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-/* --- Style des Barres de Progression (Disques) --- */
-.disk-entry {
-    margin-bottom: 15px;
-}
-.disk-entry:last-child {
-    margin-bottom: 0;
-}
-
-.disk-info {
+#script-search-bar:focus { outline: none; border-color: var(--highlight-color); }
+.script-list-container { display: flex; flex-direction: column; gap: 0.5rem; max-height: 65vh; overflow-y: auto; padding-right: 10px;}
+.script-item {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    font-size: 0.9em;
+    align-items: center;
+    background-color: rgba(0,0,0,0.2);
+    padding: 1rem;
+    border-left: 3px solid var(--border-color);
+    cursor: pointer;
 }
-
-.disk-name {
-    font-weight: bold;
+.script-item:hover { border-left-color: var(--highlight-color); }
+.script-info { display: flex; align-items: center; gap: 1rem; }
+.script-icon { font-size: 1.2rem; }
+.script-name { font-weight: 700; }
+.script-actions { display: flex; gap: 0.5rem; }
+.script-btn {
+    background-color: transparent;
+    border: 1px solid var(--text-inactive);
+    color: var(--text-inactive);
+    padding: 0.4rem 0.8rem;
+    font-family: 'Exo 2 Local', sans-serif;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s, border-color 0.2s;
 }
-
-.disk-space {
-    color: #a0a0ff;
-}
-
-.disk-progress-bar {
-    width: 100%;
-    height: 12px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.disk-progress-fill {
-    height: 100%;
-    background-color: #00bfff;
-    border-radius: 6px;
-    transition: width 0.5s ease-in-out; /* Animation fluide */
-}
-
-/* Pour le texte normal (weight 400) */
-@font-face {
-  font-family: 'Exo 2 Local';
-  src: url('fonts/Exo2-Regular.ttf') format('truetype');
-  font-weight: 400; 
-}
-
-/* Pour le texte en gras (weight 700) */
-@font-face {
-  font-family: 'Exo 2 Local';
-  src: url('fonts/Exo2-Bold.ttf') format('truetype');
-  font-weight: 700;
-}
-
-/* Pour le texte fin (weight 300) */
-@font-face {
-  font-family: 'Exo 2 Local';
-  src: url('fonts/Exo2-Light.ttf') format('truetype');
-  font-weight: 300;
-}
+.script-btn:hover { color: var(--text-color); border-color: var(--text-color); }
+.script-btn.launch:hover { color: var(--success-color); border-color: var(--success-color); }
+.script-btn.stop:hover { color: var(--error-color); border-color: var(--error-color); }
+.script-btn.view:hover { color: var(--highlight-color); border-color: var(--highlight-color); }
+.script-placeholder { color: var(--text-inactive); text-align: center; padding: 2rem; }
 
 
-/* --- Étape 2: On utilise notre police locale dans le body --- */
-body {
-    background-color: #0a0a1a;
-    color: #e0e0ff;
-    /* On appelle le nom qu'on a défini juste au-dessus */
-    font-family: 'Exo 2 Local', sans-serif; 
-    margin: 0;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+/* --- NOUVEAU : Fenêtre Modale --- */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(12, 12, 18, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.3s ease-out;
 }
+.modal-overlay.hidden { opacity: 0; pointer-events: none; }
+.modal-content {
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    width: 70%;
+    max-width: 900px;
+    max-height: 80vh;
+    display: flex; flex-direction: column;
+    transform: scale(1);
+    transition: transform 0.3s ease-out;
+}
+.modal-overlay.hidden .modal-content { transform: scale(0.95); }
+.modal-content h3 { margin: 0 0 1.5rem 0; color: var(--highlight-color); }
+.modal-content pre {
+    flex-grow: 1;
+    background-color: rgba(0,0,0,0.3);
+    padding: 1rem;
+    overflow-y: auto;
+    color: #c5c8c6; /* Monokai-like text color */
+}
+.modal-content code { font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; }
+#modal-close-btn {
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid var(--text-inactive);
+    color: var(--text-inactive);
+    padding: 0.8rem;
+    margin-top: 1.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+}
+#modal-close-btn:hover { border-color: var(--highlight-color); color: var(--highlight-color); }
+
+
+/* --- Effets d'Interaction --- */
+.interactive-item { transition: transform 0.2s ease-out, color 0.2s ease-out, background-color 0.2s ease-out; }
+.interactive-item:not(.active):hover { color: var(--text-color) !important; transform: scale(1.03); }
+.interactive-item.active:hover { transform: scale(1.03); }
+.explorer-item:hover { background-color: rgba(240, 230, 210, 0.1); }
+
+/* --- Panneau de Description --- */
+.description-panel h3 { color: var(--highlight-color); font-size: 1.2rem; font-weight: 700; margin-top: 5rem; }
+.description-panel p { color: var(--text-inactive); line-height: 1.6; font-size: 1rem; }
+
+/* --- Styles de la Scrollbar (inchangé) --- */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 5px; }
+::-webkit-scrollbar-thumb { background-color: var(--text-inactive); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background-color: var(--highlight-color); }
+* { scrollbar-width: thin; scrollbar-color: var(--text-inactive) transparent; }
