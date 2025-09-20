@@ -5,7 +5,7 @@ Dashboard
 Clonez le dépôt :
 
 ~~~Bash
-git clone https://github.com/votre-nom/Dashboard.git
+git clone https://github.com/TMCooper/Dashboard.git
 ~~~
 Accédez au dossier du projet :
 ~~~Bash
