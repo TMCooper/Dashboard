@@ -23,4 +23,5 @@ Puis effectuer
 python main.py
 ~~~
 
-![NOTE]>Tous ceci est pour windows
+>[!NOTE]
+> - Tous ceci est pour windows
