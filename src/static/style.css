@@ -1,5 +1,3 @@
-/* Fichier: style.css (Version Complète et Mise à Jour) */
-
 /* --- Polices locales et Thème --- */
 @font-face {
   font-family: 'Exo 2 Local'; src: url('fonts/Exo2-Regular.ttf') format('truetype'); font-weight: 400;
@@ -29,13 +27,13 @@ body {
     font-size: 16px; margin: 0; overflow: hidden;
 }
 
-/* --- Structure principale --- */
+/* Structure principale */
 .dashboard-container { display: grid; grid-template-columns: 280px 1fr 350px; height: 100vh; padding: 2rem; box-sizing: border-box; }
 .main-nav { padding-right: 3rem; }
 .content-panel { padding: 0 3rem; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); overflow-y: auto; position: relative; } /* Ajout de position: relative */
 .description-panel { padding-left: 3rem; }
 
-/* --- Navigation --- */
+/* Navigation */
 .main-nav ul { list-style: none; padding: 0; margin-top: 5rem; }
 .nav-item { color: var(--text-inactive); padding: 0.8rem 1.5rem; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; }
 .nav-item.active { color: var(--highlight-color); font-weight: 700; }
@@ -47,7 +45,7 @@ body {
 .nav-item.active .nav-icon { border-color: var(--highlight-color); }
 .nav-item.active .nav-icon::before, .nav-item.active .nav-icon::after { background: var(--highlight-color); }
 
-/* --- NOUVEAU : Gestionnaire de Vues et Transitions --- */
+/* Gestionnaire de Vues et Transitions */
 .view-container {
     opacity: 1;
     transform: translateY(0);
@@ -57,19 +55,19 @@ body {
     opacity: 0;
     transform: translateY(20px);
     pointer-events: none; /* Empêche les clics sur la vue cachée */
-    position: absolute; /* Permet aux vues de se superposer durant la transition */
-    top: 0; left: 0; right: 0; /* Assure que la vue cachée ne perturbe pas le layout */
-    padding: 0 3rem; /* Conserve le padding du content-panel */
+    position: absolute; /* Permet aux vues de se superposer pendant la transition */
+    top: 0; left: 0; right: 0; /* Assure l'integrité du layout */
+    padding: 0 3rem; 
 }
 
 
-/* --- Contenu Principal --- */
+/* Contenu Principal */
 .settings-group { padding: 1.5rem 0; border-bottom: 1px solid var(--border-color); }
 .settings-group:last-child { border-bottom: none; }
 .settings-group-title { font-size: 1rem; font-weight: 400; color: var(--text-inactive); text-transform: uppercase; letter-spacing: 1px; margin: 0 0 1.5rem 0; }
 .settings-group-title::before { content: ':: '; }
 
-/* --- Widgets de Performance --- */
+/* Widgets de Performance */
 .performance-widget { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 0; cursor: pointer; }
 .performance-widget:not(:last-child) { border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
 .stats-details { flex: 1; display: flex; flex-direction: column; }
@@ -78,21 +76,21 @@ body {
 .stats-primary .value { font-size: 2.5rem; font-weight: 700; color: var(--highlight-color); }
 .stats-secondary { display: flex; justify-content: space-between; color: var(--text-inactive); margin-top: 0.5rem; }
 
-/* --- Jauges --- */
+/* Jauges */
 .gauge-container { width: 150px; height: 75px; }
 .gauge { width: 100%; height: 100%; }
 .gauge-bg, .gauge-fg { fill: none; stroke-width: 8; stroke-linecap: round; }
 .gauge-bg { stroke: rgba(255, 255, 255, 0.1); }
 .gauge-fg { stroke: var(--highlight-color); stroke-dasharray: 125.6; stroke-dashoffset: 125.6; transition: stroke-dashoffset 0.5s ease-out; }
 
-/* --- Section Stockage --- */
+/* Section Stockage */
 .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; cursor: pointer; }
 .setting-item label { font-size: 1.1rem; }
 .setting-item .value { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 1rem; }
 .disk-progress-bar { width: 150px; height: 4px; background-color: rgba(255, 255, 255, 0.2); }
 .disk-progress-fill { height: 100%; background-color: var(--highlight-color); }
 
-/* --- Explorateur de Fichiers --- */
+/* Explorateur de Fichiers */
 .explorer-container { margin-top: 1.5rem; background-color: rgba(0,0,0,0.2); border-top: 1px solid var(--border-color); max-height: 35vh; display: flex; flex-direction: column; }
 .explorer-path { padding: 0.8rem 1rem; font-family: monospace; color: var(--text-inactive); background-color: rgba(0,0,0,0.3); border-bottom: 1px solid var(--border-color); }
 .explorer-list { padding: 0.5rem; overflow-y: auto; }
@@ -100,7 +98,7 @@ body {
 .explorer-item .icon.folder::before { content: '📁'; }
 .explorer-item .icon.file::before { content: '📄'; }
 
-/* --- NOUVEAU : Vue des Scripts --- */
+/* Vue des Scripts */
 .script-toolbar { margin-bottom: 1.5rem; }
 #script-search-bar {
     width: 100%;
@@ -145,7 +143,7 @@ body {
 .script-placeholder { color: var(--text-inactive); text-align: center; padding: 2rem; }
 
 
-/* --- NOUVEAU : Fenêtre Modale --- */
+/* Fenêtre Modale */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(12, 12, 18, 0.8);
@@ -189,17 +187,17 @@ body {
 #modal-close-btn:hover { border-color: var(--highlight-color); color: var(--highlight-color); }
 
 
-/* --- Effets d'Interaction --- */
+/* Effets d'Interaction */
 .interactive-item { transition: transform 0.2s ease-out, color 0.2s ease-out, background-color 0.2s ease-out; }
 .interactive-item:not(.active):hover { color: var(--text-color) !important; transform: scale(1.03); }
 .interactive-item.active:hover { transform: scale(1.03); }
 .explorer-item:hover { background-color: rgba(240, 230, 210, 0.1); }
 
-/* --- Panneau de Description --- */
+/* Panneau de Description */
 .description-panel h3 { color: var(--highlight-color); font-size: 1.2rem; font-weight: 700; margin-top: 5rem; }
 .description-panel p { color: var(--text-inactive); line-height: 1.6; font-size: 1rem; }
 
-/* --- Styles de la Scrollbar (inchangé) --- */
+/* Styles de la Scrollbar */
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 5px; }
 ::-webkit-scrollbar-thumb { background-color: var(--text-inactive); border-radius: 5px; border: 2px solid transparent; background-clip: content-box; }

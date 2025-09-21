@@ -86,7 +86,6 @@
                         <input type="search" id="script-search-bar" placeholder="Rechercher un script..." class="interactive-item">
                     </div>
                     <div id="script-list" class="script-list-container">
-                        <!-- Le contenu sera généré dynamiquement par JavaScript -->
                         <p class="script-placeholder">Chargement des scripts...</p>
                     </div>
                 </div>
@@ -126,7 +125,7 @@
             }
         };
 
-        // --- Fonctions Utilitaires ---
+        // Fonctions Utilitaires 
         function setGaugeValue(gaugeElement, percentage) {
             const totalLength = 125.6;
             const offset = totalLength - (percentage / 100) * totalLength;
@@ -146,7 +145,7 @@
             });
         }
         
-        // --- Logique de changement de vue ---
+        // Logique de changement de vue 
         function showView(viewId) {
             document.querySelectorAll('.view-container').forEach(view => {
                 if (view.id !== viewId) {
@@ -201,8 +200,6 @@
                 console.error("Erreur lors de la mise à jour des stats:", error);
             }
         }
-
-        // --- DÉBUT DE LA CORRECTION : EXPLORATEUR DE FICHIERS ---
 
         async function browsePath(path) {
             try {
@@ -266,7 +263,6 @@
             }
         }
         
-        // --- Fonctions pour la vue Scripts ---
         async function loadScripts() {
             try {
                 const response = await fetch('/api/scripts');
@@ -352,7 +348,6 @@
             });
         }
 
-         // --- NOUVELLE FONCTION POUR LA MISE A JOUR RAPIDE ---
         async function runUpdateScript() {
             console.log("Lancement de la mise à jour rapide...");
             // On prévient l'utilisateur avant de lancer

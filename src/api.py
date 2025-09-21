@@ -2,30 +2,19 @@ import os, subprocess, sys, time, psutil, glob
 from src.backend import Cardinal
 from flask import Flask, jsonify, render_template, request
 
-# --- Configuration et variables globales ---
-# Assurez-vous que ce chemin est correct par rapport à l'endroit où vous lancez l'app
+# Configuration et variables globales
 SCRIPTS_DIR = os.path.join(os.path.dirname(__file__), 'scripts')
-# Dictionnaire pour garder une trace des scripts en cours d'exécution
-# Format: { 'nom_du_script.py': <objet Popen> }
+# format { 'nom_du_script.py': <objet Popen> }
 UTILS_DIR = os.path.join(os.path.dirname(__file__), 'utils') 
 running_scripts = {}
 
 class Yui:
     app = Flask(__name__)
 
-    # --- Fonctions Utilitaires ---
-    def get_uptime():
-        """Retourne l'uptime du système sous forme de tuple (jours, heures, minutes)."""
-        uptime_seconds = time.time() - psutil.boot_time()
-        days = int(uptime_seconds // (24 * 3600))
-        hours = int((uptime_seconds % (24 * 3600)) // 3600)
-        minutes = int((uptime_seconds % 3600) // 60)
-        return days, hours, minutes
-
     # --- Routes API ---
     @app.route('/api/stats')
     def get_stats():
-        # On reprend le code de l'étape 1
+        # On remplis les differente variable pour l'api
         h, m, s = Cardinal.up_time_cpu()
         usage_cpu = Cardinal.cpu_percent()
         ram_utiliser, ram_total = Cardinal.ram_monitor()    
@@ -72,8 +61,6 @@ class Yui:
         except Exception as e:
             return jsonify({'error': str(e)}), 500
 
-    # --- NOUVELLES ROUTES POUR LA GESTION DES SCRIPTS ---
-
     @app.route('/api/scripts')
     def list_scripts():
         """Liste les scripts disponibles dans le dossier src/scripts."""
@@ -99,7 +86,7 @@ class Yui:
         if not script_name:
             return jsonify({'error': 'Script name is required'}), 400
         
-        # Sécurité : Empêche de remonter dans les répertoires (Directory Traversal)
+        # Empêche de remonter dans les répertoires (Directory Traversal)
         script_path = os.path.abspath(os.path.join(SCRIPTS_DIR, script_name))
         if not script_path.startswith(os.path.abspath(SCRIPTS_DIR)):
             return jsonify({'error': 'Access denied'}), 403
@@ -134,8 +121,7 @@ class Yui:
             elif script_name.endswith('.bat'):
                 command = [script_path]
             
-            # --- AJOUT IMPORTANT ---
-            # On dit au sous-processus de s'exécuter DEPUIS le dossier des scripts
+            # On force le sous-processus de s'exécuter DEPUIS le dossier des scripts
             process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=SCRIPTS_DIR)
             running_scripts[script_name] = process
             
@@ -180,7 +166,7 @@ class Yui:
             return jsonify({'error': 'Le script update.bat est introuvable !'}), 404
         
         try:
-            # On lance le script. Il s'ouvrira dans sa propre fenêtre de commande.
+            # On lance le script dans sa propre fenêtre de commande.
             subprocess.Popen([update_script_path], shell=True)
             return jsonify({'status': 'ok', 'message': 'Lancement du script de mise a jour.'})
         except Exception as e:
