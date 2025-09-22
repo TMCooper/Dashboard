@@ -25,3 +25,7 @@ python main.py
 
 >[!NOTE]
 > - Tous ceci est pour windows
+
+# Comming soon
+
+lecteur et ou downloader animer intergrer
