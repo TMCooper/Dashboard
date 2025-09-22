@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <audio id="hover-audio" src="../static/audio/hover_sound.mp3" preload="auto"></audio>
+    <audio id="hover-audio" src="../static/audio/ui_click.mp3" preload="auto"></audio>
 
     <div class="dashboard-container">
         
@@ -140,8 +140,8 @@
 
         function updateHoverListeners() {
             document.querySelectorAll('.interactive-item').forEach(item => {
-                item.removeEventListener('mouseenter', playHoverSound);
-                item.addEventListener('mouseenter', playHoverSound);
+                item.removeEventListener('click', playHoverSound);
+                item.addEventListener('click', playHoverSound);
             });
         }
         
